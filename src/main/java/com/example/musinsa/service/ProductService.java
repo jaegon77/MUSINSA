@@ -12,9 +12,12 @@ import com.example.musinsa.common.constant.ProductCommonConstants;
 import com.example.musinsa.common.exception.CustomException;
 import com.example.musinsa.common.util.Util;
 import com.example.musinsa.dto.BrandTotalPriceDto;
-import com.example.musinsa.dto.CategoryForLowestPriceDto;
+import com.example.musinsa.dto.CategoriesForLowestPriceDto;
+import com.example.musinsa.dto.CategoryLowestHighestPriceDto;
+import com.example.musinsa.repository.CategoryRepository;
 import com.example.musinsa.repository.ProductRepository;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,10 +25,11 @@ import lombok.RequiredArgsConstructor;
 public class ProductService {
 
 	private final ProductRepository productRepository;
+	private final CategoryRepository categoryRepository;
 
 	public Map<String, Object> getLowestPriceProductsByCategory() {
 		// Step 1: 카테고리 별 최저가격 브랜드와 상품 가격 조회
-		List<CategoryForLowestPriceDto> products = productRepository.findLowestPriceProductsByCategory();
+		List<CategoriesForLowestPriceDto> products = productRepository.findLowestPriceProductsByCategory();
 
 		// Validation 1: 데이터 유효성 확인
 		if (products.isEmpty()) {
@@ -43,7 +47,7 @@ public class ProductService {
 		}
 
 		// Step 2: 카테고리 별 상품의 최저가격 조회
-		int totalPrice = products.stream().mapToInt(CategoryForLowestPriceDto::getPrice).sum();
+		int totalPrice = products.stream().mapToInt(CategoriesForLowestPriceDto::getPrice).sum();
 
 		// Step 3: 결과 구성
 		Map<String, Object> result = new HashMap<>();
@@ -79,9 +83,44 @@ public class ProductService {
 		// Step 4: 결과 구성
 		Map<String, Object> result = new HashMap<>();
 		result.put("brand", lowestBrand.getBrandName());
-		result.put("categories", products);
+		result.put("categories", lowestBrand.getLowestPriceDto());
 		result.put("totalPrice", Util.PriceFormatterUtil(lowestBrand.getTotalPrice()));
 		result.put("message", "총합 최저가 단일 브랜드로 모든 카테고리 상품의 가격 조회.");
+		return result;
+	}
+
+	public Map<String, Object> getHighestAndLowestPriceByCategory(String categoryName) {
+		// Validation 1: 문자열 유효성 검사
+		if (StringUtils.isBlank(categoryName)) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "Category name cannot be blank.");
+		}
+
+		// Step 1 && Validation 2: 카테고리 존재 확인
+		if (!categoryRepository.existsByName(categoryName)) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "Category name does not exist.");
+		}
+
+		CategoryLowestHighestPriceDto categoryLowestHighestPriceDto = new CategoryLowestHighestPriceDto();
+
+		// Step 2: 특정 카테고리의 최저, 최고 가격 조회
+		CategoryLowestHighestPriceDto.LowestPriceByCategory lowestPriceByCategory = productRepository.findLowestPriceByCategory(categoryName);
+		CategoryLowestHighestPriceDto.HighestPriceByCategory highestPriceByCategory = productRepository.findHighestPriceByCategory(categoryName);
+
+		// Validation 3: 최저, 최고 가격 상품 존재 확인
+		if (lowestPriceByCategory == null || highestPriceByCategory == null) {
+			throw new CustomException(HttpStatus.NOT_FOUND, "No data found for the given category: " + categoryName);
+		}
+
+		categoryLowestHighestPriceDto.setCategory(categoryName);
+		categoryLowestHighestPriceDto.setLowestPriceByCategory(lowestPriceByCategory);
+		categoryLowestHighestPriceDto.setHighestPriceByCategory(highestPriceByCategory);
+
+		// Step 3: 카테고리 이름으로 최저, 최고 가격 브랜드와 상품 가격을 조회
+		Map<String, Object> result = new HashMap<>();
+		result.put("category", categoryLowestHighestPriceDto.getCategory());
+		result.put("lowestPrice", categoryLowestHighestPriceDto.getLowestPriceByCategory());
+		result.put("highestPrice", categoryLowestHighestPriceDto.getHighestPriceByCategory());
+		result.put("message", "최저가 및 최고가 브랜드와 상품 가격 조회 완료.");
 		return result;
 	}
 }
