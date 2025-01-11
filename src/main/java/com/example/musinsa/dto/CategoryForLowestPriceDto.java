@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LowestPriceDto {
+public class CategoryForLowestPriceDto {
 	private String category;
 	private String brandName;
-	private Integer price;
+	private int price;
 }

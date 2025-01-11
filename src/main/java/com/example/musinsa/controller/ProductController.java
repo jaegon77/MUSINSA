@@ -16,8 +16,13 @@ import lombok.RequiredArgsConstructor;
 public class ProductController {
 	private final ProductService productService;
 
-	@GetMapping("/lowest-price")
+	@GetMapping("/category/lowestPrice")
 	public Object getLowestPriceProductsByCategory() {
 		return productService.getLowestPriceProductsByCategory();
+	}
+
+	@GetMapping("/brand/lowestPrice")
+	public Object getLowestPriceProductsByBrand() {
+		return productService.getLowestPriceProductsByBrand();
 	}
 }
