@@ -1,21 +1,42 @@
 server:
-  port: 8080
+  port: 7007
+  servlet:
+    context-path: /category
+  undertow:
+    io-threads: 4
+    worker-threads : 100
+  max-http-request-header-size: 65536
 
+# http://localhost:7007/category/h2-console
 spring:
+  threads:
+    virtual:
+      enabled: true
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb
     username: gon
     password: password
+  sql:
+    init:
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+      mode: always
   h2:
     console:
       enabled: true
       path: /h2-console
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
         show_sql: true
+logging:
+  level:
+    root: INFO
+    org.springframework.jdbc.datasource.init.ScriptUtils: DEBUG
+    org.hibernate.SQL: DEBUG
+
