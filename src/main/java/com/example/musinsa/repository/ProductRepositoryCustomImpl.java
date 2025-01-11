@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 import com.example.musinsa.dto.BrandTotalPriceDto;
-import com.example.musinsa.dto.CategoryForLowestPriceDto;
+import com.example.musinsa.dto.CategoriesForLowestPriceDto;
+import com.example.musinsa.dto.CategoryLowestHighestPriceDto;
 import com.example.musinsa.entity.QBrand;
 import com.example.musinsa.entity.QProduct;
 import com.querydsl.core.Tuple;
@@ -22,7 +23,7 @@ public class  ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public List<CategoryForLowestPriceDto> findLowestPriceProductsByCategory() {
+	public List<CategoriesForLowestPriceDto> findLowestPriceProductsByCategory() {
 		QProduct product = QProduct.product;
 
 		// 카테고리별 최소 가격
@@ -46,7 +47,7 @@ public class  ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 
 		// 최종 데이터 조회
 		return queryFactory
-				.select(Projections.constructor(CategoryForLowestPriceDto.class,
+				.select(Projections.constructor(CategoriesForLowestPriceDto.class,
 						product.category.name,
 						product.brand.name,
 						product.price
@@ -91,5 +92,43 @@ public class  ProductRepositoryCustomImpl implements ProductRepositoryCustom {
 				.where(brand.name.eq(brandName))
 				.orderBy(product.category.name.asc())
 				.fetch();
+	}
+
+	@Override
+	public CategoryLowestHighestPriceDto.LowestPriceByCategory findLowestPriceByCategory(String categoryName) {
+		QProduct product = QProduct.product;
+		QBrand brand = QBrand.brand;
+
+		// 특정 카테고리의 최저 가격 상품 조회
+		return queryFactory
+				.select(Projections.constructor(CategoryLowestHighestPriceDto.LowestPriceByCategory.class,
+						brand.name,
+						product.price
+				))
+				.from(product)
+				.join(product.brand, brand)
+				.where(product.category.name.eq(categoryName))
+				.orderBy(product.price.asc(), brand.name.desc()) // 최저가, 브랜드 이름 정렬
+				.limit(1)
+				.fetchOne();
+	}
+
+	@Override
+	public CategoryLowestHighestPriceDto.HighestPriceByCategory findHighestPriceByCategory(String categoryName) {
+		QProduct product = QProduct.product;
+		QBrand brand = QBrand.brand;
+
+		// 특정 카테고리의 최고 가격 상품 조회
+		return queryFactory
+				.select(Projections.constructor(CategoryLowestHighestPriceDto.HighestPriceByCategory.class,
+						brand.name,
+						product.price
+				))
+				.from(product)
+				.join(product.brand, brand)
+				.where(product.category.name.eq(categoryName))
+				.orderBy(product.price.desc(), brand.name.desc()) // 최저가, 브랜드 이름 정렬
+				.limit(1)
+				.fetchOne();
 	}
 }

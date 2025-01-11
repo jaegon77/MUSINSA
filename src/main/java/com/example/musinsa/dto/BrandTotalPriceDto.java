@@ -24,16 +24,12 @@ public class BrandTotalPriceDto {
 		this.totalPrice = totalPrice;
 	}
 
-	@Getter
-	@Setter
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
 	public static class LowestPriceDto {
 		private String category;
 		private int price;
-
-		public LowestPriceDto(String category, int price) {
-			this.category = category;
-			this.price = price;
-		}
 
 		@JsonProperty("price")
 		public String getFormattedPrice() {

@@ -27,6 +27,7 @@ public class ResponseFormatAspect {
 			if (result instanceof Map) {
 				Map<String, Object> response = (Map<String, Object>) result;
 				message = response.containsKey("message") ? response.get("message").toString() : "Operation successful";
+				response.remove("message");
 			}
 
 			return new CommonResponseModel<>(HttpStatus.OK, message, result);
