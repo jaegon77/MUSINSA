@@ -187,6 +187,10 @@ public class ProductService {
 			throw new CustomException(HttpStatus.BAD_REQUEST, "Brand Id cannot be null.");
 		}
 
+		if (productRepository.existsByBrandId(request.getId())) {
+			throw new CustomException(HttpStatus.CONFLICT, "Cannot delete brand with associated products.");
+		}
+
 		Brand brand = brandRepository.findById(request.getId())
 				.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand not found."));
 		brandRepository.delete(brand);
@@ -249,6 +253,10 @@ public class ProductService {
 			throw new CustomException(HttpStatus.BAD_REQUEST, "Category Id cannot be null.");
 		}
 
+		if (productRepository.existsByCategoryId(request.getId())) {
+			throw new CustomException(HttpStatus.CONFLICT, "Cannot delete category with associated products.");
+		}
+
 		Category category = categoryRepository.findById(request.getId())
 				.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Category not found."));
 		categoryRepository.delete(category);
@@ -286,6 +294,10 @@ public class ProductService {
 			throw new CustomException(HttpStatus.BAD_REQUEST, "Product price must be positive.");
 		}
 
+		if (ObjectUtils.isEmpty(request.getId()) || ObjectUtils.isEmpty(request.getCategoryId()) || ObjectUtils.isEmpty(request.getBrandId())) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "Product, Category, Brand id cannot be null.");
+		}
+
 		Category category = categoryRepository.findById(request.getCategoryId())
 				.orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Category not found."));
 		Brand brand = brandRepository.findById(request.getBrandId())
@@ -310,6 +322,10 @@ public class ProductService {
 
 		if (request.getPrice() <= 0) {
 			throw new CustomException(HttpStatus.BAD_REQUEST, "Product price must be positive.");
+		}
+
+		if (ObjectUtils.isEmpty(request.getId()) || ObjectUtils.isEmpty(request.getCategoryId()) || ObjectUtils.isEmpty(request.getBrandId())) {
+			throw new CustomException(HttpStatus.BAD_REQUEST, "Product, Category, Brand id cannot be null.");
 		}
 
 		Product product = productRepository.findById(request.getId())
