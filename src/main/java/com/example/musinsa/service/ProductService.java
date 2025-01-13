@@ -294,7 +294,7 @@ public class ProductService {
 			throw new CustomException(HttpStatus.BAD_REQUEST, "Product price must be positive.");
 		}
 
-		if (ObjectUtils.isEmpty(request.getId()) || ObjectUtils.isEmpty(request.getCategoryId()) || ObjectUtils.isEmpty(request.getBrandId())) {
+		if (ObjectUtils.isEmpty(request.getCategoryId()) || ObjectUtils.isEmpty(request.getBrandId())) {
 			throw new CustomException(HttpStatus.BAD_REQUEST, "Product, Category, Brand id cannot be null.");
 		}
 
