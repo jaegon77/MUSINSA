@@ -44,8 +44,8 @@ Musinsa 백엔드 과제 프로젝트는 최신 기술 스택을 활용하여 �
 
 1. **소스 코드 클론**
    ```bash
-   git clone https://github.com/your-repository-url/musinsa-backend.git
-   cd musinsa-backend
+   git clone https://github.com/jaegon77/MUSINSA.git
+   cd MUSINSA
    ```
 
 2. **필수 의존성 설치**
