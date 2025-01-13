@@ -43,7 +43,7 @@ public class ProductService {
 
 		// Validation 1: 데이터 유효성 확인
 		if (products.isEmpty()) {
-			throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "No products found for the given brand.");
+			throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "No products found for the given brand and category.");
 		}
 
 		// Validation 2: 카테고리 수 확인
