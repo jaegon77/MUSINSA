@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.example.musinsa.common.CommonResponseModel;
+import com.example.musinsa.dto.CommonResponseModel;
 import com.example.musinsa.common.exception.CustomException;
 
 import lombok.extern.slf4j.Slf4j;
